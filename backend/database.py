@@ -125,28 +125,28 @@ def init_database():
         ''')
         
         # --- Create event to automatically handle expired posts ---
-        # NOTE: This requires the MySQL Event Scheduler to be enabled on your server.
+        # NOTE: This requires the MySQL      to be enabled on your server.
         # Check if the event scheduler is enabled.
-        cursor.execute("SET GLOBAL event_scheduler = ON") 
+        # cursor.execute("SET GLOBAL event_scheduler = ON") 
         
-        cursor.execute('''
-            CREATE EVENT IF NOT EXISTS auto_handle_expired_posts
-            ON SCHEDULE EVERY 1 DAY
-            DO
-            BEGIN
-                -- 1. Mark posts as 'expired' when the expiration date has passed
-                UPDATE posts 
-                SET item_status = 'expired' 
-                WHERE expires_at < NOW() 
-                AND item_status IN ('lost', 'found');
+        # cursor.execute('''
+        #     CREATE EVENT IF NOT EXISTS auto_handle_expired_posts
+        #     ON SCHEDULE EVERY 1 DAY
+        #     DO
+        #     BEGIN
+        #         -- 1. Mark posts as 'expired' when the expiration date has passed
+        #         UPDATE posts 
+        #         SET item_status = 'expired' 
+        #         WHERE expires_at < NOW() 
+        #         AND item_status IN ('lost', 'found');
                 
-                -- 2. Delete posts marked 'expired' that have been expired for an additional 30 days
-                -- (This keeps expired posts visible for 30 days after the initial expiration)
-                DELETE FROM posts 
-                WHERE item_status = 'expired' 
-                AND expires_at < (NOW() - INTERVAL 30 DAY);
-            END
-        ''')
+        #         -- 2. Delete posts marked 'expired' that have been expired for an additional 30 days
+        #         -- (This keeps expired posts visible for 30 days after the initial expiration)
+        #         DELETE FROM posts 
+        #         WHERE item_status = 'expired' 
+        #         AND expires_at < (NOW() - INTERVAL 30 DAY);
+        #     END
+        # ''')
         
         conn.commit()
         print("✅ Database 'lost_found_system' initialized successfully!")
