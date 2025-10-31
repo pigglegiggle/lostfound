@@ -8,8 +8,10 @@ def get_db():
             host="localhost",
             user="root",
             password="",  # Empty for XAMPP
-            database="lost_found_system"
+            database="lost_found_system",
+            auth_plugin='caching_sha2_password'
         )
+        print("✅ Database connection established.")
         return connection
     except Error as e:
         print(f"Database connection failed: {e}")
