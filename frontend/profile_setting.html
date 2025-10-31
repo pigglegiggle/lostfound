@@ -530,10 +530,32 @@
 
         function populateForm(userData) {
             console.log('Populating form with:', userData);
-            
+            const facultySelect = document.getElementById('faculty');
+            const facultyMap = {
+                "School of Engineering": "1",
+                "School of Architecture, Art, and Design": "2",
+                "School of Industrial Education and Technology": "3",
+                "School of Agricultural Technology": "4",
+                "School of Science": "5",
+                "School of Food Industry": "6",
+                "School of Information Technology": "7",
+                "International College": "8",
+                "College of Materials Innovation and Technology": "9",
+                "College of Advanced Manufacturing Innovation": "10",
+                "KMITL Business School": "11",
+                "International Academy of Aviation Industry": "12",
+                "School of Liberal Arts": "13",
+                "Faculty of Medicine": "14",
+                "College of Innovation and Industrial Management": "15",
+                "Institute of Music Science and Engineering": "16",
+                "School of Dentistry": "17",
+                "School of Nursing Science": "18",
+                "School of Integrated Innovative Technology": "19"
+            };
+            const selectedValue = facultyMap[userData.faculty] || "";
             // Populate form fields
             document.getElementById('name').value = userData.full_name || userData.name || '';
-            document.getElementById('faculty').value = userData.faculty || 'Select';
+            facultySelect.value = selectedValue;
             document.getElementById('class-year').value = userData.class_year || '';
             document.getElementById('email').value = userData.email || '';
             document.getElementById('phone').value = userData.phone || '';
@@ -662,11 +684,10 @@
                 return false;
             }
 
-            // Basic phone validation (Thai format)
-            const phoneRegex = /^[0-9]{9,10}$/;
-            const cleanPhone = phone.replace(/-/g, '');
-            if (!phoneRegex.test(cleanPhone)) {
-                alert('Please enter a valid phone number (9-10 digits).');
+            const cleanPhone = phone.replace(/\D/g, '');
+
+            if (!/^\d{9,10}$/.test(cleanPhone)) {
+                alert('Please enter a valid phone number (9–10 digits).');
                 document.getElementById('phone').focus();
                 return false;
             }
@@ -1003,16 +1024,22 @@
             }
         });
 
-        // Add phone formatting
-        document.getElementById('phone').addEventListener('input', function() {
-            let value = this.value.replace(/\D/g, '');
-            if (value.length > 3 && value.length <= 6) {
-                value = value.replace(/(\d{3})(\d{0,3})/, '$1-$2');
-            } else if (value.length > 6) {
-                value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1-$2-$3');
+        // ✅ Improved phone number formatting (for Thai mobile numbers)
+        const phoneInput = document.getElementById('phone');
+
+        phoneInput.addEventListener('input', function() {
+            let digits = this.value.replace(/\D/g, ''); // Remove non-numeric chars
+            digits = digits.substring(0, 10); // Limit to 10 digits
+
+            if (digits.length > 6) {
+                this.value = digits.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1-$2-$3');
+            } else if (digits.length > 3) {
+                this.value = digits.replace(/(\d{3})(\d{0,3})/, '$1-$2');
+            } else {
+                this.value = digits;
             }
-            this.value = value;
         });
+
 
         // Load user profile when page loads
         loadUserProfile();
