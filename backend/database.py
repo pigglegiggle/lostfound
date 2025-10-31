@@ -7,7 +7,7 @@ def get_db():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="",  # Empty for XAMPP
+            password="1234",  # Empty for XAMPP
             database="lost_found_system",
             auth_plugin='caching_sha2_password'
         )
@@ -29,7 +29,7 @@ def init_database():
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password=""
+            password="1234"
         )
         cursor = conn.cursor()
         
