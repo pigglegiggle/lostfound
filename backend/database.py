@@ -99,7 +99,7 @@ def init_database():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS user_social_profiles (
                 user_social_id INT AUTO_INCREMENT PRIMARY KEY,
-                student_id VARCHAR(8) NOT NULL,
+                student_id INT NOT NULL,
                 contact_id INT NOT NULL,
                 -- Ensures a user can't have the same link defined twice
                 UNIQUE KEY unique_user_contact (student_id, contact_id), 
@@ -113,7 +113,7 @@ def init_database():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS posts (
                 post_id INT AUTO_INCREMENT PRIMARY KEY,
-                student_id VARCHAR(8) NOT NULL,
+                student_id INT NOT NULL,
                 item_name VARCHAR(100) NOT NULL,
                 item_status ENUM('lost', 'found', 'returned', 'claimed', 'expired') DEFAULT 'lost',
                 place VARCHAR(100) NOT NULL,
