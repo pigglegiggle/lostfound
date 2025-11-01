@@ -579,6 +579,147 @@ async def get_all_posts(item_status: Optional[str] = None, search: Optional[str]
         cursor.close()
         db.close()
 
+# ========== (Your existing routes are here) ==========
+
+# ========== PROFILE IMAGE UPLOAD ROUTES ==========
+@app.post("/upload-profile-image")
+async def upload_profile_image(
+    profile_image: UploadFile = File(...),
+    student_id: str = Form(...)
+):
+    try:
+        # Check if file is an image
+        if not profile_image.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Generate unique filename
+        file_extension = profile_image.filename.split('.')[-1]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"profile_{student_id}_{timestamp}.{file_extension}"
+        file_path = f"uploads/profiles/{filename}"
+        
+        # Create profiles directory if it doesn't exist
+        os.makedirs("uploads/profiles", exist_ok=True)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            content = await profile_image.read()
+            buffer.write(content)
+        
+        # Update database with profile photo URL
+        profile_photo_url = f"/uploads/profiles/{filename}"
+        
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "UPDATE users SET profile_photo_url = %s WHERE student_id = %s",
+            (profile_photo_url, student_id)
+        )
+        db.commit()
+        
+        return {
+            "success": True,
+            "profile_photo_url": profile_photo_url,
+            "message": "Profile image uploaded successfully"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
+
+@app.put("/users/{student_id}/profile-image")
+async def update_profile_image(student_id: str, image: UploadFile = File(...)):
+    try:
+        # Check if file is an image
+        if not image.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Generate unique filename
+        file_extension = image.filename.split('.')[-1]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"profile_{student_id}_{timestamp}.{file_extension}"
+        file_path = f"uploads/profiles/{filename}"
+        
+        # Create profiles directory if it doesn't exist
+        os.makedirs("uploads/profiles", exist_ok=True)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            content = await image.read()
+            buffer.write(content)
+        
+        # Update database
+        profile_photo_url = f"/uploads/profiles/{filename}"
+        
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "UPDATE users SET profile_photo_url = %s WHERE student_id = %s",
+            (profile_photo_url, student_id)
+        )
+        db.commit()
+        
+        return {
+            "success": True,
+            "profile_photo_url": profile_photo_url
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image update failed: {str(e)}")
+
+# ========== UPDATE USER PROFILE ROUTE ==========
+@app.put("/users/{student_id}")
+async def update_user_profile(student_id: str, user_update: UserUpdate):
+    db = get_db()
+    cursor = db.cursor()
+    
+    try:
+        # Build update query dynamically
+        update_fields = []
+        update_values = []
+        
+        if user_update.full_name is not None:
+            update_fields.append("full_name = %s")
+            update_values.append(user_update.full_name)
+        
+        if user_update.faculty is not None:
+            update_fields.append("faculty = %s")
+            update_values.append(user_update.faculty)
+        
+        if user_update.class_year is not None:
+            update_fields.append("class_year = %s")
+            update_values.append(user_update.class_year)
+        
+        if user_update.phone is not None:
+            update_fields.append("phone = %s")
+            update_values.append(user_update.phone)
+        
+        if user_update.email is not None:
+            update_fields.append("email = %s")
+            update_values.append(user_update.email)
+        
+        if user_update.profile_photo_url is not None:
+            update_fields.append("profile_photo_url = %s")
+            update_values.append(user_update.profile_photo_url)
+        
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        update_values.append(student_id)
+        
+        query = f"UPDATE users SET {', '.join(update_fields)} WHERE student_id = %s"
+        cursor.execute(query, update_values)
+        db.commit()
+        
+        return {"success": True, "message": "Profile updated successfully"}
+        
+    except mysql.connector.Error as err:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {err}")
+    finally:
+        cursor.close()
+        db.close()
+
+# ========== (Keep your existing code below) ==========
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
