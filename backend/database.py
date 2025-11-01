@@ -52,7 +52,7 @@ def init_database():
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
-                student_id VARCHAR(8) NOT NULL PRIMARY KEY,
+                student_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 full_name VARCHAR(255) NOT NULL,
                 faculty ENUM(
                     'School of Engineering',
