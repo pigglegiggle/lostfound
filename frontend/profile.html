@@ -196,21 +196,25 @@
             console.log('Current user:', currentUser);
             console.log('Student ID:', studentId);
 
-            // Load user profile and posts
+                       // Load user profile and posts
             async function loadProfile() {
                 try {
                     // Load user profile from backend
                     const userProfile = await LostFoundAPI.getUserProfile(studentId);
                     console.log('User profile:', userProfile);
                     
-                    // Update localStorage with latest data
+                    // Get current user data from localStorage (which contains the image)
+                    const currentLocalUser = JSON.parse(localStorage.getItem('user'));
+                    
+                    // Update localStorage with latest data BUT preserve the profile_photo_url
                     const updatedUser = {
-                        ...currentUser,
-                        ...userProfile
+                        ...currentLocalUser, // Keep the existing data including image
+                        ...userProfile,      // Override with API data
+                        profile_photo_url: currentLocalUser.profile_photo_url // Always keep the local image
                     };
                     localStorage.setItem('user', JSON.stringify(updatedUser));
                     
-                    displayUserProfile(userProfile);
+                    displayUserProfile(updatedUser); // Display the combined data
                     
                     // Load user posts
                     const userPosts = await LostFoundAPI.getUserPosts(studentId);
@@ -220,7 +224,8 @@
                 } catch (error) {
                     console.error('Failed to load profile:', error);
                     // Show user data from localStorage as fallback
-                    displayUserProfile(currentUser);
+                    const localUser = JSON.parse(localStorage.getItem('user'));
+                    displayUserProfile(localUser);
                     showNoPostsMessage();
                 }
             }
@@ -228,8 +233,13 @@
             function displayUserProfile(profile) {
                 // Update profile information
                 const profileImage = document.querySelector('.avatar-preview img');
-                if (profile.profile_photo_url) {
-                    profileImage.src = profile.profile_photo_url;
+                
+                // Check localStorage first for the image, then profile data
+                const localUser = JSON.parse(localStorage.getItem('user'));
+                const imageUrl = localUser?.profile_photo_url || profile.profile_photo_url;
+                
+                if (imageUrl) {
+                    profileImage.src = imageUrl;
                 } else {
                     profileImage.src = 'pic/profile.png'; // Default image
                 }

@@ -2,17 +2,21 @@
 const API_BASE = "http://localhost:8000";
 
 class LostFoundAPI {
-    static async request(endpoint, options = {}) {
+        static async request(endpoint, options = {}) {
         const url = `${API_BASE}${endpoint}`;
+        
+        // Handle FormData (for file uploads) vs JSON
+        const isFormData = options.body instanceof FormData;
+        
         const config = {
             headers: {
-                'Content-Type': 'application/json',
+                ...(isFormData ? {} : {'Content-Type': 'application/json'}),
                 ...options.headers,
             },
             ...options
         };
         
-        console.log(`API Request: ${config.method} ${url}`, config.body ? JSON.parse(config.body) : 'No body');
+        console.log(`API Request: ${config.method} ${url}`, isFormData ? '[FormData]' : (config.body ? JSON.parse(config.body) : 'No body'));
         
         try {
             const response = await fetch(url, config);
