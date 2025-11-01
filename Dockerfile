@@ -1,21 +1,18 @@
-# Use Python base image
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Copy ONLY backend files (not frontend)
-COPY backend/requirements.txt .
+# Copy requirements first for better caching
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
-COPY backend/ .
+# Copy the rest of the app
+COPY . .
 
-# Create directory for SQLite database
-RUN mkdir -p /data
+# Create necessary directories
+RUN mkdir -p uploads/profiles
+RUN mkdir -p static
 
-# Expose port
 EXPOSE 8000
 
-# Start command - point to your app.py
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
