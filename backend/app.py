@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import mysql.connector
@@ -25,6 +26,16 @@ app.add_middleware(
 
 # Import database functions
 from database import get_db, init_database
+
+# Create necessary directories
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("static", exist_ok=True)
+
+# Mount static files - serve uploaded images
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# Mount static files - serve frontend HTML files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Data models
 class SocialLink(BaseModel):
@@ -84,13 +95,6 @@ def startup():
     # Shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
 
-    # Serve uploaded images
-    os.makedirs("uploads", exist_ok=True)
-    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-    # Serve frontend static files
-    app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
 
 def check_and_update_expired_posts():
     """Check for expired posts and update their status"""
@@ -124,9 +128,14 @@ def check_and_update_expired_posts():
         db.close()
 
 # ========== AUTHENTICATION ROUTES ==========
-@app.get("/")
+@app.get("/api/status")
 def api_status():
     return {"status": "active", "service": "Lost&Found API", "database": "MySQL"}
+
+@app.get("/")
+async def serve_index():
+    """Serve the main application HTML file"""
+    return FileResponse("static/index.html")
 
 @app.post("/auth/register")
 async def register_user(user: UserCreate):
@@ -718,6 +727,26 @@ async def update_user_profile(student_id: str, user_update: UserUpdate):
     finally:
         cursor.close()
         db.close()
+
+# ========== HTML PAGE ROUTES (MUST BE LAST) ==========
+@app.get("/{page_name}")
+async def serve_html_page(page_name: str):
+    """Serve specific HTML files from the static directory"""
+    import os
+    
+    # Security check: only allow .html files and prevent directory traversal
+    if not page_name.endswith('.html'):
+        page_name += '.html'
+    
+    # Remove any path traversal attempts
+    page_name = os.path.basename(page_name)
+    
+    file_path = f"static/{page_name}"
+    
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        raise HTTPException(status_code=404, detail=f"Page {page_name} not found")
 
 # ========== (Keep your existing code below) ==========
 if __name__ == "__main__":

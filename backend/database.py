@@ -1,15 +1,17 @@
 import mysql.connector
 from mysql.connector import Error
+import os
 
 def get_db():
     """Create a database connection for standard API operations."""
     try:
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="1234",  # Empty for XAMPP
-            database="lost_found_system",
-            auth_plugin='caching_sha2_password'
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "root"),
+            password=os.getenv("DB_PASSWORD", "1234"),
+            database=os.getenv("DB_NAME", "lost_found_system"),
+            port=int(os.getenv("DB_PORT", "3306")),
+            auth_plugin='mysql_native_password'
         )
         print("✅ Database connection established.")
         return connection
@@ -27,9 +29,11 @@ def init_database():
     try:
         # First connect without specifying the database to create it
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="1234"
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "root"),
+            password=os.getenv("DB_PASSWORD", "1234"),
+            port=int(os.getenv("DB_PORT", "3306")),
+            auth_plugin='mysql_native_password'
         )
         cursor = conn.cursor()
         
