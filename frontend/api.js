@@ -79,7 +79,27 @@ class LostFoundAPI {
     static async getUserProfile(studentId) {
         return this.request(`/users/${studentId}`);
     }
+    // Profile image upload endpoints
+    static async uploadProfileImage(studentId, imageFile) {
+        const formData = new FormData();
+        formData.append('profile_image', imageFile);
+        formData.append('student_id', studentId);
 
+        return this.request('/upload-profile-image', {
+            method: 'POST',
+            body: formData
+        });
+    }
+
+    static async updateProfileImage(studentId, imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        return this.request(`/users/${studentId}/profile-image`, {
+            method: 'PUT',
+            body: formData
+        });
+    }
     // Try different methods for updating user profile
     static async updateUserProfile(studentId, profileData) {
         // First try PUT
