@@ -496,7 +496,25 @@
 
         console.log('Current user:', currentUser);
         console.log('Student ID:', studentId);
-
+        // === ADD THIS IMAGE UPLOAD FUNCTION HERE ===
+        async function handleImageUpload(studentId, imageFile) {
+            try {
+                console.log('Uploading profile image...');
+                const result = await LostFoundAPI.uploadProfileImage(studentId, imageFile);
+                console.log('Image upload result:', result);
+                return result;
+            } catch (error) {
+                console.log('Primary upload failed, trying alternative...');
+                try {
+                    const result = await LostFoundAPI.updateProfileImage(studentId, imageFile);
+                    console.log('Alternative image upload result:', result);
+                    return result;
+                } catch (altError) {
+                    console.error('All image upload methods failed:', altError);
+                    throw altError;
+                }
+            }
+        }
         // Add logout functionality
         document.querySelectorAll('.logout-btn').forEach(btn => {
             btn.addEventListener('click', () => {
