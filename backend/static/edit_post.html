@@ -303,7 +303,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="api.js"></script>
+    <script src="/static/api.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
         const fileInput = document.getElementById('fileInput');
@@ -326,7 +326,7 @@
         // Check if user is logged in
         const userData = localStorage.getItem('user');
         if (!userData) {
-            window.location.href = 'signin.html';
+            window.location.href = '/signin';
             return;
         }
 
@@ -337,7 +337,7 @@
             btn.addEventListener('click', () => {
                 localStorage.removeItem('user');
                 localStorage.removeItem('isLoggedIn');
-                window.location.href = 'signin.html';
+                window.location.href = '/signin';
             });
         });
 
@@ -537,7 +537,7 @@
                 
                 if (response.success) {
                     alert('Post updated successfully!');
-                    window.location.href = 'profile.html';
+                    window.location.href = '/profile';
                 } else {
                     throw new Error('Failed to update post');
                 }

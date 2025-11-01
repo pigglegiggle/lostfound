@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="/static/global.css">
 
     <style>
         /* CSS from home.css and global.css consolidated here */
@@ -468,7 +468,7 @@
         </div>
     </main>
     
-    <script src="api.js"></script>
+    <script src="/static/api.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const menuToggle = document.getElementById('menuToggle');
@@ -487,7 +487,7 @@
         // Check if user is logged in
         const userData = localStorage.getItem('user');
         if (!userData) {
-            window.location.href = 'signin.html';
+            window.location.href = '/signin';
             return;
         }
 
@@ -520,7 +520,7 @@
             btn.addEventListener('click', () => {
                 localStorage.removeItem('user');
                 localStorage.removeItem('isLoggedIn');
-                window.location.href = 'signin.html';
+                window.location.href = '/signin';
             });
         });
 

@@ -326,7 +326,7 @@
         // Check if user is logged in
         const userData = localStorage.getItem('user');
         if (!userData) {
-            window.location.href = 'signin.html';
+            window.location.href = '/signin';
             return;
         }
 
@@ -338,7 +338,7 @@
             btn.addEventListener('click', function() {
                 localStorage.removeItem('user');
                 localStorage.removeItem('isLoggedIn');
-                window.location.href = 'signin.html';
+                window.location.href = '/signin';
             });
         });
 
@@ -565,7 +565,7 @@
                 
                 if (response.ok) {
                     alert('Post created successfully!');
-                    window.location.href = 'index.html';
+                    window.location.href = '/';
                 } else {
                     // Show detailed validation errors
                     let errorMessage = 'Failed to create post: ';
