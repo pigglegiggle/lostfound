@@ -84,9 +84,13 @@ def startup():
     # Shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
 
-# Create uploads directory
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+    # Serve uploaded images
+    os.makedirs("uploads", exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+    # Serve frontend static files
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 def check_and_update_expired_posts():
     """Check for expired posts and update their status"""
