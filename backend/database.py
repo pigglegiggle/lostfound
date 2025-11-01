@@ -33,17 +33,21 @@ def init_database():
         )
         cursor = conn.cursor()
         
-        # Create database if not exists
-        cursor.execute("CREATE DATABASE IF NOT EXISTS lost_found_system")
-        cursor.execute("USE lost_found_system")
-        
-        cursor.execute('''
-            DROP TABLE IF EXISTS user_social_profiles;
-            DROP TABLE IF EXISTS post_images;
-            DROP TABLE IF EXISTS posts;
-            DROP TABLE IF EXISTS social_profiles;
-            DROP TABLE IF EXISTS users;
-        ''')
+        # Add this at the beginning to check if tables already exist
+        cursor.execute("SHOW TABLES LIKE 'users'")
+        existing_tables = cursor.fetchall()
+
+        if not existing_tables:
+            # Only drop tables if this is first-time setup
+            cursor.execute('''
+                DROP TABLE IF EXISTS user_social_profiles;
+                DROP TABLE IF EXISTS post_images;
+                DROP TABLE IF EXISTS posts;
+                DROP TABLE IF EXISTS social_profiles;
+                DROP TABLE IF EXISTS users;
+            ''')
+        else:
+            print("✅ Tables already exist - skipping drop operations")
 
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
         cursor.execute('''
