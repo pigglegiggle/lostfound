@@ -37,10 +37,18 @@ def init_database():
         cursor.execute("CREATE DATABASE IF NOT EXISTS lost_found_system")
         cursor.execute("USE lost_found_system")
         
+        cursor.execute('''
+            DROP TABLE IF EXISTS user_social_profiles;
+            DROP TABLE IF EXISTS post_images;
+            DROP TABLE IF EXISTS posts;
+            DROP TABLE IF EXISTS social_profiles;
+            DROP TABLE IF EXISTS users;
+        ''')
+
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
-                student_id INT AUTO_INCREMENT PRIMARY KEY,
+                student_id VARCHAR(8) NOT NULL PRIMARY KEY,
                 full_name VARCHAR(255) NOT NULL,
                 faculty ENUM(
                     'School of Engineering',
@@ -87,7 +95,7 @@ def init_database():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS user_social_profiles (
                 user_social_id INT AUTO_INCREMENT PRIMARY KEY,
-                student_id INT NOT NULL,
+                student_id VARCHAR(8) NOT NULL,
                 contact_id INT NOT NULL,
                 -- Ensures a user can't have the same link defined twice
                 UNIQUE KEY unique_user_contact (student_id, contact_id), 
@@ -101,7 +109,7 @@ def init_database():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS posts (
                 post_id INT AUTO_INCREMENT PRIMARY KEY,
-                student_id INT NOT NULL,
+                student_id VARCHAR(8) NOT NULL,
                 item_name VARCHAR(100) NOT NULL,
                 item_status ENUM('lost', 'found', 'returned', 'claimed', 'expired') DEFAULT 'lost',
                 place VARCHAR(100) NOT NULL,
