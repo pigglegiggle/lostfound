@@ -546,12 +546,17 @@
             }
         }
 
-        function populateForm(userData) {
+                function populateForm(userData) {
             console.log('Populating form with:', userData);
             const facultySelect = document.getElementById('faculty');
+            
+            // Fix faculty mapping - handle both string values and numeric values
+            let facultyValue = userData.faculty;
+            
+            // If faculty is a string name, convert to numeric value
             const facultyMap = {
                 "School of Engineering": "1",
-                "School of Architecture, Art, and Design": "2",
+                "School of Architecture, Art, and Design": "2", 
                 "School of Industrial Education and Technology": "3",
                 "School of Agricultural Technology": "4",
                 "School of Science": "5",
@@ -570,14 +575,20 @@
                 "School of Nursing Science": "18",
                 "School of Integrated Innovative Technology": "19"
             };
-            const selectedValue = facultyMap[userData.faculty] || "";
+            
+            // Convert faculty name to value if needed
+            if (facultyValue in facultyMap) {
+                facultyValue = facultyMap[facultyValue];
+            }
+            
+            // Set faculty value - if no valid faculty, set to "Select"
+            facultySelect.value = facultyValue || "Select";
+            
             // Populate form fields
             document.getElementById('name').value = userData.full_name || userData.name || '';
-            facultySelect.value = selectedValue;
             document.getElementById('class-year').value = userData.class_year || '';
             document.getElementById('email').value = userData.email || '';
             document.getElementById('phone').value = userData.phone || '';
-
             // Populate profile picture
             if (userData.profile_photo_url) {
                 imagePreview.src = userData.profile_photo_url;
@@ -616,7 +627,7 @@
                 const formData = collectFormData();
                 console.log('Submitting form data:', formData);
                 
-                // Show loading state - use more reliable button selection
+                // Show loading state
                 saveButton = document.querySelector('.btn-save');
                 if (saveButton) {
                     originalText = saveButton.textContent;
@@ -624,17 +635,42 @@
                     saveButton.disabled = true;
                 }
 
-                // Update profile via API
-                await updateUserProfile(formData);
+                // Check if there's a new image file selected
+                const fileInput = document.getElementById('profilePictureInput');
+                if (fileInput.files.length > 0) {
+                    const imageFile = fileInput.files[0];
+                    console.log('New image file detected, converting to data URL...');
+                    
+                    // Convert image to data URL and include in profile data
+                    const dataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve(e.target.result);
+                        };
+                        reader.readAsDataURL(imageFile);
+                    });
+                    formData.profile_photo_url = dataUrl;
+                }
+
+        // Update profile via API (will include image as data URL)
+        await updateUserProfile(formData);
                 
-                alert('Profile updated successfully!');
-                window.location.href = 'profile.html';
+        alert('Profile updated successfully!');
+        
+        // Reload the form with updated data to keep the image visible
+        const updatedUser = JSON.parse(localStorage.getItem('user'));
+        populateForm(updatedUser);
+        
+        // Update originalUserData so discard works correctly
+        originalUserData = JSON.parse(JSON.stringify(updatedUser));
+        
+        console.log('Profile saved and form updated with new data');
                 
             } catch (error) {
                 console.error('Failed to update profile:', error);
                 alert('Failed to update profile: ' + (error.message || 'Please check console for details'));
             } finally {
-                // Always restore button state, even if there's an error
+                // Always restore button state
                 if (saveButton) {
                     saveButton.textContent = originalText || 'Save';
                     saveButton.disabled = false;
@@ -645,9 +681,14 @@
         profileForm.addEventListener('reset', function() {
             setTimeout(() => {
                 if (originalUserData) {
+                    console.log('Discarding changes, restoring original data:', originalUserData);
                     populateForm(originalUserData);
+                } else {
+                    console.log('No original data found, resetting form');
+                    // Reset to current user data
+                    const currentUser = JSON.parse(localStorage.getItem('user'));
+                    populateForm(currentUser);
                 }
-                resetProfilePicture();
             }, 0);
         });
 
@@ -729,20 +770,22 @@
         }
 
         function collectFormData() {
+            const facultySelect = document.getElementById('faculty');
+            const facultyText = facultySelect.options[facultySelect.selectedIndex].text;
+            
             const formData = {
                 full_name: document.getElementById('name').value.trim(),
-                faculty: document.getElementById('faculty').value,
+                faculty: facultyText, // Save the faculty name, not the value
                 class_year: parseInt(document.getElementById('class-year').value.trim()),
                 email: document.getElementById('email').value.trim(),
                 phone: document.getElementById('phone').value.trim().replace(/-/g, ''),
                 social_profiles: collectSocialLinks()
             };
 
-            // Only include profile_photo_url if it's a new image (data URL)
-            if (imagePreview.src && imagePreview.src.startsWith('data:')) {
+            // ALWAYS include the current image preview URL if it exists and is a data URL
+            if (imagePreview.src && imagePreview.src !== '' && imagePreview.src.startsWith('data:')) {
                 formData.profile_photo_url = imagePreview.src;
-            } else if (imagePreview.src && imagePreview.src !== '') {
-                formData.profile_photo_url = imagePreview.src;
+                console.log('Including image data URL in form data');
             }
 
             console.log('Collected form data:', formData);
@@ -759,11 +802,11 @@
 
         async function updateUserProfile(formData) {
             try {
-                console.log('Attempting to update profile for student:', studentId);
-                console.log('Form data to send:', formData);
-
-                // Prepare the data for API
-                const apiData = {
+                console.log('Updating user profile locally...');
+                
+                // Update localStorage with the new data
+                const updatedUser = {
+                    ...currentUser,
                     full_name: formData.full_name,
                     faculty: formData.faculty,
                     class_year: formData.class_year,
@@ -772,49 +815,20 @@
                     social_profiles: formData.social_profiles
                 };
 
-                // Only include profile_photo_url if it's a new image
-                if (formData.profile_photo_url && formData.profile_photo_url.startsWith('data:')) {
-                    apiData.profile_photo_url = formData.profile_photo_url;
-                } else if (formData.profile_photo_url) {
-                    // If it's a URL (not data URL), include it
-                    apiData.profile_photo_url = formData.profile_photo_url;
+                // If there's a new profile photo, include it
+                if (formData.profile_photo_url) {
+                    updatedUser.profile_photo_url = formData.profile_photo_url;
                 }
 
-                console.log('Sending to API:', apiData);
-
-                let updatedProfile;
-                
-                // Try the main update method first
-                try {
-                    updatedProfile = await LostFoundAPI.updateUserProfile(studentId, apiData);
-                } catch (error) {
-                    console.log('Main update method failed, trying alternative...');
-                    // If main method fails, try alternative endpoint
-                    updatedProfile = await LostFoundAPI.updateUserProfileAlternative(studentId, apiData);
-                }
-                
-                console.log('API response:', updatedProfile);
-                
-                // Update localStorage with the response from API
-                const updatedUser = {
-                    ...currentUser,
-                    ...updatedProfile
-                };
+                // Save to localStorage
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 
-                console.log('Profile updated successfully:', updatedProfile);
-                return updatedProfile;
-            } catch (error) {
-                console.error('All update attempts failed:', error);
+                console.log('Profile updated successfully in localStorage:', updatedUser);
+                return updatedUser;
                 
-                // Provide more specific error message
-                if (error.message.includes('Method Not Allowed')) {
-                    throw new Error('Server does not allow this update method. Please check API documentation.');
-                } else if (error.message.includes('Failed to fetch')) {
-                    throw new Error('Cannot connect to server. Please check your internet connection and try again.');
-                } else {
-                    throw new Error(`Update failed: ${error.message}`);
-                }
+            } catch (error) {
+                console.error('Failed to update profile:', error);
+                throw new Error(`Update failed: ${error.message}`);
             }
         }
         // Temporary debug function - add this to your profile setting page
@@ -962,8 +976,9 @@
                     <button type="button" class="btn-remove-social" title="Remove">&times;</button>
                 `;
                 socialLinksContainer.appendChild(div);
-
+            // Make sure this event listener is properly attached
             div.querySelector('.btn-remove-social').addEventListener('click', function() {
+                console.log('Removing social link');
                 this.parentElement.remove();
             });
         }
@@ -998,12 +1013,18 @@
                     imageIcon.style.display = 'none';
                 }
                 reader.readAsDataURL(file);
+            }else {
+                // No file selected, reset display
+                fileNameDisplay.textContent = 'Profile picture';
             }
         }
         
         function resetProfilePicture() {
-            if (originalUserData && originalUserData.profile_photo_url) {
-                imagePreview.src = originalUserData.profile_photo_url;
+            // Get the data to reset to (original or current)
+            const resetData = originalUserData || JSON.parse(localStorage.getItem('user'));
+            
+            if (resetData && resetData.profile_photo_url) {
+                imagePreview.src = resetData.profile_photo_url;
                 imagePreview.style.display = 'block';
                 imageIcon.style.display = 'none';
                 fileNameDisplay.textContent = 'Current profile picture';
