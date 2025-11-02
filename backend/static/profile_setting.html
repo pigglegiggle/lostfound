@@ -589,16 +589,18 @@
             document.getElementById('class-year').value = userData.class_year || '';
             document.getElementById('email').value = userData.email || '';
             document.getElementById('phone').value = userData.phone || '';
-            // Populate profile picture
+           // Populate profile picture - FIXED
             if (userData.profile_photo_url) {
                 imagePreview.src = userData.profile_photo_url;
                 imagePreview.style.display = 'block';
                 imageIcon.style.display = 'none';
                 fileNameDisplay.textContent = 'Current profile picture';
             } else {
-                fileNameDisplay.textContent = 'Profile picture';
-                imagePreview.style.display = 'none';
-                imageIcon.style.display = 'flex';
+                // Show default avatar instead of icon
+                imagePreview.src = '/uploads/profiles/default_avatar.png';
+                imagePreview.style.display = 'block';
+                imageIcon.style.display = 'none';
+                fileNameDisplay.textContent = 'Default profile picture';
             }
 
             // Populate social links

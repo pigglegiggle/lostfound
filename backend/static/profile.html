@@ -206,16 +206,15 @@
                     // Get current user data from localStorage (which contains the image)
                     const currentLocalUser = JSON.parse(localStorage.getItem('user'));
                     
-                    // Update localStorage with latest data BUT preserve the profile_photo_url
+                    // ✅ FIXED: Update localStorage with latest data BUT preserve the profile_photo_url
                     const updatedUser = {
-                        ...currentLocalUser, // Keep the existing data including image
-                        ...userProfile,      // Override with API data
-                        profile_photo_url: currentLocalUser.profile_photo_url // Always keep the local image
+                        ...userProfile,      // Use API data as base
+                        profile_photo_url: userProfile.profile_photo_url || currentLocalUser.profile_photo_url // Use API image if available
                     };
                     localStorage.setItem('user', JSON.stringify(updatedUser));
-                    
+
                     displayUserProfile(updatedUser); // Display the combined data
-                    
+                                        
                     // Load user posts
                     const userPosts = await LostFoundAPI.getUserPosts(studentId);
                     console.log('User posts:', userPosts);
@@ -234,15 +233,11 @@
                 // Update profile information
                 const profileImage = document.querySelector('.avatar-preview img');
                 
-                // Check localStorage first for the image, then profile data
-                const localUser = JSON.parse(localStorage.getItem('user'));
-                const imageUrl = localUser?.profile_photo_url || profile.profile_photo_url;
+                // ✅ FIXED: Use API data first, then localStorage as fallback
+                const imageUrl = profile.profile_photo_url || '/uploads/profiles/default_avatar.png';
                 
-                if (imageUrl) {
-                    profileImage.src = imageUrl;
-                } else {
-                    profileImage.src = 'pic/profile.png'; // Default image
-                }
+                // Set the image source
+                profileImage.src = imageUrl;
                 
                 // Update name - check both full_name and name fields
                 const name = profile.full_name || profile.name || '[Name Surname]';
@@ -253,7 +248,7 @@
                 const classYear = profile.class_year || '[Class year]';
                 document.querySelector('.text-muted.mb-0').textContent = `${faculty}, Year ${classYear}`;
                 
-                console.log('Displaying profile:', { name, faculty, classYear });
+                console.log('Displaying profile:', { name, faculty, classYear, imageUrl });
             }
 
             function displayUserPosts(posts) {

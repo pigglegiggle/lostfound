@@ -1,6 +1,9 @@
 // api.js
-const API_BASE = "";
+const API_BASE = window.location.hostname === 'localhost' 
+    ? "http://localhost:8000" 
+    : `http://${window.location.hostname}:8000`;
 
+console.log("🌐 Using API:", API_BASE);
 class LostFoundAPI {
         static async request(endpoint, options = {}) {
         const url = `${API_BASE}${endpoint}`;

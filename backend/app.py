@@ -142,6 +142,12 @@ async def register_user(user: UserCreate):
     if user.password != user.confirm_password:
         raise HTTPException(status_code=400, detail="Password confirmation does not match")
     
+    # ✅ DEBUGGING ADDED HERE
+    print("🟡 REGISTER DEBUG ==================================")
+    print("🔗 Social profiles received:", user.social_profiles)
+    print("📦 Full user data:", user.dict())
+    print("🟡 END DEBUG ======================================")
+    
     db = get_db()
     cursor = db.cursor()
     
@@ -162,28 +168,38 @@ async def register_user(user: UserCreate):
             user.phone,
             user.email,
             user.password,
-            user.profile_photo_url
+            "/uploads/profiles/default_avatar.png"
         ))
         
         student_id = cursor.lastrowid
         
-        # Insert social profiles if any
+        # ✅ REPLACED SOCIAL PROFILES SECTION WITH DEBUG VERSION
         if user.social_profiles:
-            for social in user.social_profiles:
-                # Insert into social_profiles table
-                cursor.execute('''
-                    INSERT INTO social_profiles (platform, profile_url)
-                    VALUES (%s, %s)
-                ''', (social.platform, social.profile_url))
-                
-                contact_id = cursor.lastrowid
-                
-                # Link to user in junction table
-                cursor.execute('''
-                    INSERT INTO user_social_profiles (student_id, contact_id)
-                    VALUES (%s, %s)
-                ''', (student_id, contact_id))
-        
+            print(f"🟡 Inserting {len(user.social_profiles)} social profiles...")
+            for i, social in enumerate(user.social_profiles):
+                try:
+                    print(f"🟡 Inserting social profile {i+1}: {social.platform} - {social.profile_url}")
+                    
+                    cursor.execute('''
+                        INSERT INTO social_profiles (platform, profile_url)
+                        VALUES (%s, %s)
+                    ''', (social.platform, social.profile_url))
+                    
+                    contact_id = cursor.lastrowid
+                    print(f"✅ Social profile inserted with contact_id: {contact_id}")
+                    
+                    cursor.execute('''
+                        INSERT INTO user_social_profiles (student_id, contact_id)
+                        VALUES (%s, %s)
+                    ''', (student_id, contact_id))
+                    print(f"✅ Linked to user {student_id}")
+                    
+                except mysql.connector.Error as err:
+                    print(f"❌ ERROR inserting social profile: {err}")
+                    print(f"❌ Failed data - Platform: '{social.platform}', URL: '{social.profile_url}'")
+                    continue
+
+        print(f"✅ Completed social profiles insertion")
         db.commit()
         
         return {
@@ -199,7 +215,6 @@ async def register_user(user: UserCreate):
     finally:
         cursor.close()
         db.close()
-
 @app.post("/auth/login")
 async def login_user(credentials: UserLogin):
     db = get_db()
