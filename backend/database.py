@@ -6,10 +6,10 @@ def get_db():
     """Create a database connection for standard API operations."""
     try:
         connection = mysql.connector.connect(
-            host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
+            host="lnfdbinstance.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
             user="admin",
             password="LnF-password",
-            database="lnf-db",
+            database="lnfdbinstance",
             port=3306,
             # auth_plugin='mysql_native_password'
         )
@@ -29,7 +29,7 @@ def init_database():
     try:
         # First connect without specifying the database to create it
         conn = mysql.connector.connect(
-            host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
+            host="lnfdbinstance.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
             user="admin",
             password="LnF-password",
             port=3306,
@@ -37,7 +37,7 @@ def init_database():
         cursor = conn.cursor()
         
         # Create database if not exists
-        cursor.execute("CREATE DATABASE IF NOT EXISTS lnf-db")
+        cursor.execute("CREATE DATABASE IF NOT EXISTS lnfdbinstance")
         cursor.execute("USE lnf-db")
         
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
