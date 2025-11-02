@@ -38,7 +38,7 @@ def init_database():
         
         # Create database if not exists
         cursor.execute("CREATE DATABASE IF NOT EXISTS lnfdbinstance")
-        cursor.execute("USE lnf-db")
+        cursor.execute("USE lnfdbinstance")
         
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
         cursor.execute('''
