@@ -502,7 +502,7 @@
                         
                         console.log('Uploading image:', file.name);
                         
-                        const uploadResponse = await fetch('http://localhost:8000/upload', {
+                        const uploadResponse = await fetch('/upload', {
                             method: 'POST',
                             body: formData
                         });
@@ -550,7 +550,7 @@
                 console.log('Sending post data:', postData);
 
                 // Create the post
-                const response = await fetch('http://localhost:8000/posts', {
+                const response = await fetch('/posts', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
