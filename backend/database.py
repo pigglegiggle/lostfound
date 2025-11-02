@@ -29,11 +29,11 @@ def init_database():
     try:
         # First connect without specifying the database to create it
         conn = mysql.connector.connect(
-            host=os.getenv("DB_HOST", "localhost"),
-            user=os.getenv("DB_USER", "root"),
-            password=os.getenv("DB_PASSWORD", "1234"),
-            port=int(os.getenv("DB_PORT", "3306")),
-            auth_plugin='mysql_native_password'
+            host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
+            user="admin",
+            password="LnF-password",
+            database="lost_found_system",
+            port=3306,
         )
         cursor = conn.cursor()
         
