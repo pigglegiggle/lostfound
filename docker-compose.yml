@@ -1,33 +1,4 @@
 services:
-  # MySQL Database Service
-  mysql:
-    image: mysql:8.0.35
-    container_name: lost_found_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: lost_found_system
-      MYSQL_USER: app_user
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
-    networks:
-      - lost_found_network
-    command: >
-      --default-authentication-plugin=mysql_native_password
-      --innodb-use-native-aio=0
-      --skip-host-cache
-      --skip-name-resolve
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
-      timeout: 30s
-      retries: 5
-      interval: 15s
-      start_period: 60s
-
   # FastAPI Application Service
   app:
     build: .
@@ -39,19 +10,13 @@ services:
       - ./backend:/app
       - ./backend/uploads:/app/uploads
     environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=1234
+      - DB_HOST=your-rds-endpoint.amazonaws.com
+      - DB_USER=admin
+      - DB_PASSWORD=yourpassword
       - DB_NAME=lost_found_system
       - DB_PORT=3306
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
       - lost_found_network
-
-volumes:
-  mysql_data:
 
 networks:
   lost_found_network:
