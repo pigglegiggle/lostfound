@@ -243,7 +243,7 @@
             
             // Test backend connection
             try {
-                const status = await fetch('http://localhost:8000/api/status');
+                const status = await fetch('/api/status');
                 const statusData = await status.json();
                 console.log('✅ Backend is running:', statusData);
             } catch (error) {
@@ -327,7 +327,7 @@
                                     <p class="card-text small text-muted mb-1">${post.full_name}</p>
                                     <p class="card-text small text-muted mb-3">${new Date(post.created_at).toLocaleDateString()}</p>
                                     ${post.images && post.images.length > 0 ? 
-                                        `<img src="http://localhost:8000${post.images[0]}" class="custom-placeholder-image mb-3" style="height: 150px; object-fit: cover;">` : 
+                                        `<img src="${post.images[0]}" class="custom-placeholder-image mb-3" style="height: 150px; object-fit: cover;">` : 
                                         `<div class="custom-placeholder-image mb-3"></div>`
                                     }
                                     <a href="item_details.html?id=${post.post_id}" class="btn custom-btn-detail w-100">Detail</a>
