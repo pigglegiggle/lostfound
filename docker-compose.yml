@@ -10,10 +10,10 @@ services:
       - ./backend:/app
       - ./backend/uploads:/app/uploads
     environment:
-      - DB_HOST=lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com
+      - DB_HOST=lnfdbinstance.c20rmtyx8ttq.us-east-1.rds.amazonaws.com
       - DB_USER=admin
       - DB_PASSWORD=LnF-password
-      - DB_NAME=lnf-db
+      - DB_NAME=lnfdbinstance
       - DB_PORT=3306
     networks:
       - lost_found_network
