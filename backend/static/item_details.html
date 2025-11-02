@@ -326,7 +326,7 @@
             let carouselHTML = '';
             if (post.images && post.images.length > 0) {
                 post.images.forEach((img, index) => {
-                    const imageUrl = img.startsWith('http') ? img : `http://localhost:8000${img}`;
+                    const imageUrl = img.startsWith('http') ? img : `${img}`;
                     carouselHTML += `<div class="carousel-item ${index === 0 ? 'active' : ''}"><img src="${imageUrl}" class="d-block" alt="Item Image"></div>`;
                 });
             } else {
