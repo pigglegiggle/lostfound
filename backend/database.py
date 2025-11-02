@@ -32,14 +32,13 @@ def init_database():
             host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
             user="admin",
             password="LnF-password",
-            database="lnf-db",
             port=3306,
         )
         cursor = conn.cursor()
         
         # Create database if not exists
-        cursor.execute("CREATE DATABASE IF NOT EXISTS lost_found_system")
-        cursor.execute("USE lost_found_system")
+        cursor.execute("CREATE DATABASE IF NOT EXISTS lnf-db")
+        cursor.execute("USE lnf-db")
         
         # --- Create 'users' table (Must be created before 'user_social_profiles') ---
         cursor.execute('''
