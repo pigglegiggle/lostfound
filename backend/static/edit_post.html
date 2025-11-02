@@ -384,7 +384,7 @@
                 uploadedFiles = post.images.map(url => ({ 
                     type: 'url', 
                     src: url, 
-                    objectURL: url.startsWith('http') ? url : `http://localhost:8000${url}`
+                    objectURL: url.startsWith('http') ? url : `/${url.replace(/^\/+/, '')}`
                 }));
                 activeImageIndex = 0;
             }
@@ -499,7 +499,7 @@
                         const formData = new FormData();
                         formData.append('file', fileEntry.file);
                         
-                        const uploadResponse = await fetch('http://localhost:8000/upload', {
+                        const uploadResponse = await fetch('/upload', {
                             method: 'POST',
                             body: formData
                         });
