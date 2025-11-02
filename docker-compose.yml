@@ -10,9 +10,9 @@ services:
       - ./backend:/app
       - ./backend/uploads:/app/uploads
     environment:
-      - DB_HOST=your-rds-endpoint.amazonaws.com
+      - DB_HOST=lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com
       - DB_USER=admin
-      - DB_PASSWORD=yourpassword
+      - DB_PASSWORD=LnF-password
       - DB_NAME=lost_found_system
       - DB_PORT=3306
     networks:
