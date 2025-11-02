@@ -9,7 +9,7 @@ def get_db():
             host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
             user="admin",
             password="LnF-password",
-            database="lost_found_system",
+            database="lnf-db",
             port=3306,
             # auth_plugin='mysql_native_password'
         )
@@ -32,7 +32,7 @@ def init_database():
             host="lnf-db.c20rmtyx8ttq.us-east-1.rds.amazonaws.com",
             user="admin",
             password="LnF-password",
-            database="lost_found_system",
+            database="lnf-db",
             port=3306,
         )
         cursor = conn.cursor()
