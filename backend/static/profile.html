@@ -74,8 +74,8 @@
                 <span class="minimized-text">L&F</span>
             </div>
             <nav>
-                <a href="/"><i class="bi bi-house-door-fill"></i><span> Home</span></a>
-                <a href="/profile" class="active"><i class="bi bi-person-fill"></i><span> Profile</span></a>
+                <a href="index.html"><i class="bi bi-house-door-fill"></i><span> Home</span></a>
+                <a href="profile.html" class="active"><i class="bi bi-person-fill"></i><span> Profile</span></a>
             </nav>
             <button class="logout-btn">Logout</button>
         </aside>
@@ -87,8 +87,8 @@
             </nav>
             
             <div class="mobile-menu-body" id="mobileMenu">
-                <a href="/"><i class="bi bi-house-door-fill"></i> Home</a>
-                <a href="/profile" class="active"><i class="bi bi-person-fill"></i> Profile</a>
+                <a href="index.html"><i class="bi bi-house-door-fill"></i> Home</a>
+                <a href="profile.html" class="active"><i class="bi bi-person-fill"></i> Profile</a>
                 <button class="logout-btn logout-btn-mobile">Logout</button>
             </div>
         </header>
@@ -100,14 +100,14 @@
                         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between text-center text-md-start">
                             <div class="d-flex flex-column flex-md-row align-items-center">
                                 <div class="avatar-preview me-md-4 mb-3 mb-md-0">
-                                    <img src="pic/profile.png" alt="Profile Picture">
+                                    <img id="profile-image" src="/static/pic/profile.png" alt="Profile Picture">
                                 </div>
                                 <div>
                                     <h3 class="fw-bold mb-0">[Name Surname]</h3>
                                     <p class="text-muted mb-0">[Faculty], [Class year]</p>
                                 </div>
                             </div>
-                            <a href="/profile_setting" class="btn profile-setting-btn mt-3 mt-md-0">
+                            <a href="profile_setting.html" class="btn profile-setting-btn mt-3 mt-md-0">
                                 Profile Setting
                             </a>
                         </div>
@@ -206,16 +206,15 @@
                     // Get current user data from localStorage (which contains the image)
                     const currentLocalUser = JSON.parse(localStorage.getItem('user'));
                     
-                    // Update localStorage with latest data BUT preserve the profile_photo_url
+                    // ✅ FIXED: Update localStorage with latest data BUT preserve the profile_photo_url
                     const updatedUser = {
-                        ...currentLocalUser, // Keep the existing data including image
-                        ...userProfile,      // Override with API data
-                        profile_photo_url: currentLocalUser.profile_photo_url // Always keep the local image
+                        ...userProfile,      // Use API data as base
+                        profile_photo_url: userProfile.profile_photo_url || currentLocalUser.profile_photo_url // Use API image if available
                     };
                     localStorage.setItem('user', JSON.stringify(updatedUser));
-                    
+
                     displayUserProfile(updatedUser); // Display the combined data
-                    
+                                        
                     // Load user posts
                     const userPosts = await LostFoundAPI.getUserPosts(studentId);
                     console.log('User posts:', userPosts);
@@ -234,15 +233,11 @@
                 // Update profile information
                 const profileImage = document.querySelector('.avatar-preview img');
                 
-                // Check localStorage first for the image, then profile data
-                const localUser = JSON.parse(localStorage.getItem('user'));
-                const imageUrl = localUser?.profile_photo_url || profile.profile_photo_url;
+                // ✅ FIXED: Use API data first, then localStorage as fallback
+                const imageUrl = profile.profile_photo_url || '/static/pic/profile.png';
                 
-                if (imageUrl) {
-                    profileImage.src = imageUrl;
-                } else {
-                    profileImage.src = 'pic/profile.png'; // Default image
-                }
+                // Set the image source
+                profileImage.src = imageUrl;
                 
                 // Update name - check both full_name and name fields
                 const name = profile.full_name || profile.name || '[Name Surname]';
@@ -253,7 +248,7 @@
                 const classYear = profile.class_year || '[Class year]';
                 document.querySelector('.text-muted.mb-0').textContent = `${faculty}, Year ${classYear}`;
                 
-                console.log('Displaying profile:', { name, faculty, classYear });
+                console.log('Displaying profile:', { name, faculty, classYear, imageUrl });
             }
 
             function displayUserPosts(posts) {
@@ -276,8 +271,8 @@
                                 </span>
                             </div>
                             <div class="d-flex align-items-center mt-2 mt-md-0">
-                                <a href="/item_details?id=${post.post_id}" class="btn btn-sm btn-outline-secondary me-2">View Details</a>
-                                <a href="/edit_post?id=${post.post_id}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
+                                <a href="item_details.html?id=${post.post_id}" class="btn btn-sm btn-outline-secondary me-2">View Details</a>
+                                <a href="edit_post.html?id=${post.post_id}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
                                 <div class="dropdown mx-2 align-items-center">
                                     <button class="btn btn-sm btn-light p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v fa-lg m-2"></i>
@@ -304,7 +299,7 @@
                     <div class="text-center py-4">
                         <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
                         <p class="mt-2 text-muted">You haven't created any posts yet.</p>
-                        <a href="/post_created" class="btn profile-setting-btn">Create Your First Post</a>
+                        <a href="post_created.html" class="btn profile-setting-btn">Create Your First Post</a>
                     </div>
                 `;
             }

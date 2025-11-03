@@ -365,8 +365,13 @@
             <span class="minimized-text">L&F</span>
         </div>
         <nav>
+<<<<<<< HEAD
             <a href="/"><i class="bi bi-house-door-fill"></i> <span>Home</span></a>
             <a href="/profile" class="active"><i class="bi bi-person-fill"></i> <span>Profile</span></a>
+=======
+            <a href="index.html"><i class="bi bi-house-door-fill"></i> <span>Home</span></a>
+            <a href="profile.html" class="active"><i class="bi bi-person-fill"></i> <span>Profile</span></a>
+>>>>>>> pim-ing
         </nav>
         <button class="logout-btn">Logout</button>
     </aside>
@@ -378,8 +383,13 @@
         </nav>
         
         <div class="mobile-menu-body" id="mobileMenu">
+<<<<<<< HEAD
             <a href="/"><i class="bi bi-house-door-fill"></i> Home</a>
             <a href="/profile" class="active"><i class="bi bi-person-fill"></i> Profile</a>
+=======
+            <a href="index.html"><i class="bi bi-house-door-fill"></i> Home</a>
+            <a href="profile.html" class="active"><i class="bi bi-person-fill"></i> Profile</a>
+>>>>>>> pim-ing
             <button class="logout-btn logout-btn-mobile">Logout</button>
         </div>
     </header>
@@ -589,16 +599,28 @@
             document.getElementById('class-year').value = userData.class_year || '';
             document.getElementById('email').value = userData.email || '';
             document.getElementById('phone').value = userData.phone || '';
+<<<<<<< HEAD
             // Populate profile picture
+=======
+           // Populate profile picture - FIXED
+>>>>>>> pim-ing
             if (userData.profile_photo_url) {
                 imagePreview.src = userData.profile_photo_url;
                 imagePreview.style.display = 'block';
                 imageIcon.style.display = 'none';
                 fileNameDisplay.textContent = 'Current profile picture';
             } else {
+<<<<<<< HEAD
                 fileNameDisplay.textContent = 'Profile picture';
                 imagePreview.style.display = 'none';
                 imageIcon.style.display = 'flex';
+=======
+                // Show default avatar instead of icon
+                imagePreview.src = '/uploads/profiles/default_avatar.png';
+                imagePreview.style.display = 'block';
+                imageIcon.style.display = 'none';
+                fileNameDisplay.textContent = 'Default profile picture';
+>>>>>>> pim-ing
             }
 
             // Populate social links

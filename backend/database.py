@@ -11,6 +11,10 @@ def get_db():
             password="LnF-password",
             database="lnfdbinstance",
             port=3306,
+<<<<<<< HEAD
+=======
+
+>>>>>>> pim-ing
             # auth_plugin='mysql_native_password'
         )
         print("✅ Database connection established.")

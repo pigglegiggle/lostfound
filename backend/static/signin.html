@@ -34,7 +34,11 @@
                         <input type="password" class="form-control custom-form-control" id="passwordInput" placeholder="your password">
                     </div>
                     <div class="d-flex justify-content-end mb-4">
+<<<<<<< HEAD
                         <a href="/signup" class="text-decoration-none custom-link-text">Create new account</a>
+=======
+                        <a href="signup.html" class="text-decoration-none custom-link-text">Create new account</a>
+>>>>>>> pim-ing
                     </div>
                     <button type="submit" class="btn btn-primary w-100 custom-login-btn">Login</button>
                 </form>
@@ -43,7 +47,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<<<<<<< HEAD
     <script src="/static/sessionManager.js"></script>
+=======
+>>>>>>> pim-ing
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const loginForm = document.querySelector('form');
@@ -121,7 +128,12 @@
         });
         
         // Check if user is already logged in
+<<<<<<< HEAD
         if (SessionManager.isValidSession()) {
+=======
+        const userData = localStorage.getItem('user');
+        if (userData) {
+>>>>>>> pim-ing
             // Redirect to home page if already logged in
             window.location.href = '/';
             return;
@@ -171,8 +183,14 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
+<<<<<<< HEAD
                     // Create new session using SessionManager
                     SessionManager.createSession(result.user_data);
+=======
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(result.user_data));
+                    localStorage.setItem('isLoggedIn', 'true');
+>>>>>>> pim-ing
                     
                     alert('Login successful! Welcome ' + result.user_data.name);
                     // Redirect to home page
