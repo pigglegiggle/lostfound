@@ -100,7 +100,7 @@
                         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between text-center text-md-start">
                             <div class="d-flex flex-column flex-md-row align-items-center">
                                 <div class="avatar-preview me-md-4 mb-3 mb-md-0">
-                                    <img src="pic/profile.png" alt="Profile Picture">
+                                    <img id="profile-image" src="/static/pic/profile.png" alt="Profile Picture">
                                 </div>
                                 <div>
                                     <h3 class="fw-bold mb-0">[Name Surname]</h3>
@@ -234,7 +234,7 @@
                 const profileImage = document.querySelector('.avatar-preview img');
                 
                 // ✅ FIXED: Use API data first, then localStorage as fallback
-                const imageUrl = profile.profile_photo_url || '/uploads/profiles/default_avatar.png';
+                const imageUrl = profile.profile_photo_url || '/static/pic/profile.png';
                 
                 // Set the image source
                 profileImage.src = imageUrl;

@@ -137,6 +137,36 @@ async def serve_index():
     """Serve the main application HTML file"""
     return FileResponse("static/index.html")
 
+@app.get("/signin")
+async def serve_signin():
+    """Serve the signin page"""
+    return FileResponse("static/signin.html")
+
+@app.get("/signup")
+async def serve_signup():
+    """Serve the signup page"""
+    return FileResponse("static/signup.html")
+
+@app.get("/profile")
+async def serve_profile():
+    """Serve the profile page"""
+    return FileResponse("static/profile.html")
+
+@app.get("/item_details")
+async def serve_item_details():
+    """Serve the item details page"""
+    return FileResponse("static/item_details.html")
+
+@app.get("/edit_post")
+async def serve_edit_post():
+    """Serve the edit post page"""
+    return FileResponse("static/edit_post.html")
+
+@app.get("/post_created")
+async def serve_post_created():
+    """Serve the post created page"""
+    return FileResponse("static/post_created.html")
+
 @app.post("/auth/register")
 async def register_user(user: UserCreate):
     if user.password != user.confirm_password:
@@ -168,7 +198,7 @@ async def register_user(user: UserCreate):
             user.phone,
             user.email,
             user.password,
-            "/uploads/profiles/default_avatar.png"
+            "/static/pic/profile.png"
         ))
         
         student_id = cursor.lastrowid
